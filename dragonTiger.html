@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <title>Even-Odd Betting Game</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #222; color: #fff; }
+    .timer { font-size: 24px; margin: 20px; }
+    .history { margin: 10px; display: flex; justify-content: center; gap: 5px; flex-wrap: wrap; }
+    .history span { background: #444; padding: 5px 10px; border-radius: 5px; }
+    .number-box { font-size: 40px; margin: 20px; background: black; padding: 20px; border-radius: 10px; }
+    .slots { display: flex; justify-content: center; gap: 20px; margin: 20px; }
+    .slot { padding: 20px; border-radius: 10px; cursor: pointer; font-size: 18px; }
+    .red { background: red; }
+    .blue { background: blue; }
+  </style>
+</head>
+<body>
+  <h1>Even-Odd Betting Game</h1>
+  <div class="timer">बेटिंग टाइम: <span id="timer">15</span> सेकंड</div>
+  <div class="history" id="history"></div>
+  <div class="number-box" id="number">?</div>
+  <div class="slots">
+    <div class="slot red" onclick="placeBet('Even')">Red Slot - Even</div>
+    <div class="slot blue" onclick="placeBet('Odd')">Blue Slot - Odd</div>
+  </div>
+
+  <script>
+    let timer = 15;
+    let history = [];
+    let bet = null;
+
+    function updateTimer() {
+      document.getElementById('timer').innerText = timer;
+      if (timer === 0) {
+        rollNumber();
+        timer = 15;
+        bet = null;
+      } else {
+        timer--;
+      }
+    }
+
+    function rollNumber() {
+      const num = Math.floor(Math.random() * 100);
+      document.getElementById('number').innerText = num;
+      const result = num % 2 === 0 ? 'Even' : 'Odd';
+      history.unshift(result);
+      if (history.length > 12) history.pop();
+      updateHistory();
+      if (bet) {
+        alert(bet === result ? "आप जीत गए!" : "आप हार गए!");
+      }
+    }
+
+    function updateHistory() {
+      const histDiv = document.getElementById('history');
+      histDiv.innerHTML = '';
+      history.forEach(item => {
+        const span = document.createElement('span');
+        span.innerText = item;
+        histDiv.appendChild(span);
+      });
+    }
+
+    function placeBet(choice) {
+      bet = choice;
+      alert(`आपने ${choice} पर बेट लगाई है`);
+    }
+
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
