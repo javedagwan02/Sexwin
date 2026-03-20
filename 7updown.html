@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <title>7-Up-Down Game</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #222; color: #fff; }
+    .timer { font-size: 24px; margin: 20px; }
+    .history { margin: 10px; display: flex; justify-content: center; gap: 5px; flex-wrap: wrap; }
+    .history span { background: #444; padding: 5px 10px; border-radius: 5px; }
+    .dice { font-size: 40px; margin: 20px; }
+    .slots { display: flex; justify-content: center; gap: 20px; margin: 20px; }
+    .slot { padding: 20px; border-radius: 10px; cursor: pointer; font-size: 18px; }
+    .red { background: red; }
+    .green { background: green; }
+    .orange { background: orange; }
+    .chips { margin: 20px; }
+    .chip { padding: 10px 15px; margin: 5px; background: #555; border-radius: 50%; cursor: pointer; }
+    .scoreboard { margin: 20px; font-size: 20px; }
+    .reset { margin: 20px; padding: 10px 20px; background: #888; border: none; cursor: pointer; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>7-Up-Down Betting Game</h1>
+  <div class="timer">बेटिंग टाइम: <span id="timer">15</span> सेकंड</div>
+  <div class="history" id="history"></div>
+  <div class="dice" id="dice">🎲 ?</div>
+
+  <div class="chips">
+    <span class="chip" onclick="selectChip(10)">10</span>
+    <span class="chip" onclick="selectChip(50)">50</span>
+    <span class="chip" onclick="selectChip(100)">100</span>
+    <span class="chip" onclick="selectChip(500)">500</span>
+    <span class="chip" onclick="selectChip(1000)">1000</span>
+    <span class="chip" onclick="selectChip(5000)">5000</span>
+  </div>
+  <p>चुना हुआ बेट अमाउंट: <span id="betAmount">0</span></p>
+
+  <div class="slots">
+    <div class="slot red" onclick="placeBet('Below')">Red Slot - Below 7</div>
+    <div class="slot green" onclick="placeBet('Above')">Green Slot - Above 7</div>
+    <div class="slot orange" onclick="placeBet('Exact')">Orange Slot - Exact 7</div>
+  </div>
+
+  <div class="scoreboard">
+    🏆 स्कोर: <span id="score">0</span>
+  </div>
+
+  <button class="reset" onclick="resetGame()">🔄 रीसेट गेम</button>
+
+  <script>
+    let timer = 15;
+    let history = [];
+    let bet = null;
+    let betAmount = 0;
+    let score = 0;
+
+    function updateTimer() {
+      document.getElementById('timer').innerText = timer;
+      if (timer === 0) {
+        rollDice();
+        timer = 15;
+        bet = null;
+      } else {
+        timer--;
+      }
+    }
+
+    function rollDice() {
+      const dice1 = Math.floor(Math.random() * 6) + 1;
+      const dice2 = Math.floor(Math.random() * 6) + 1;
+      const total = dice1 + dice2;
+      document.getElementById('dice').innerText = `🎲 ${dice1} + ${dice2} = ${total}`;
+
+      let result = '';
+      if (total < 7) result = 'Below';
+      else if (total > 7) result = 'Above';
+      else result = 'Exact';
+
+      history.unshift(result);
+      if (history.length > 12) history.pop();
+      updateHistory();
+
+      if (bet && betAmount > 0) {
+        let win = 0;
+        if (bet === result) {
+          if (result === 'Exact') win = betAmount * 5;
+          else win = betAmount * 2;
+          score += win; // जीत पर स्कोर बढ़ेगा
+          alert(`🎉 आप जीत गए! जीत: ${win}`);
+        } else {
+          score -= betAmount; // हार पर स्कोर घटेगा
+          alert("❌ आप हार गए!");
+        }
+        updateScore();
+      }
+    }
+
+    function updateHistory() {
+      const histDiv = document.getElementById('history');
+      histDiv.innerHTML = '';
+      history.forEach(item => {
+        const span = document.createElement('span');
+        span.innerText = item;
+        histDiv.appendChild(span);
+      });
+    }
+
+    function placeBet(choice) {
+      if (betAmount === 0) {
+        alert("कृपया पहले चिप चुनें!");
+        return;
+      }
+      bet = choice;
+      alert(`आपने ${choice} पर ${betAmount} की बेट लगाई है`);
+    }
+
+    function selectChip(amount) {
+      betAmount = amount;
+      document.getElementById('betAmount').innerText = betAmount;
+    }
+
+    function updateScore() {
+      document.getElementById('score').innerText = score;
+    }
+
+    function resetGame() {
+      timer = 15;
+      history = [];
+      bet = null;
+      betAmount = 0;
+      score = 0;
+      document.getElementById('timer').innerText = timer;
+      document.getElementById('history').innerHTML = '';
+      document.getElementById('dice').innerText = '🎲 ?';
+      document.getElementById('betAmount').innerText = '0';
+      document.getElementById('score').innerText = '0';
+      alert("🔄 गेम रीसेट हो गया!");
+    }
+
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
